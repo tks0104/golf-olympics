@@ -250,6 +250,17 @@ function showError(msg) {
 // Check if medal is already taken by another player on same hole
 function checkDuplicate(hole, player, key) {
   if (key === "none" || key === "diamond") return false;
+  // If someone has diamond, block lowest medal (iron for 4p, bronze for 3p)
+  const lowestKey = playerCount === 4 ? "iron" : "bronze";
+  if (key === lowestKey) {
+    for (let p = 0; p < playerCount; p++) {
+      if (scores[hole][p] === "diamond") {
+        const lowestLabel = findMedal(lowestKey).label;
+        showError("⚠️ ダイヤ取得者がいるため " + lowestLabel + " は選択できません");
+        return true;
+      }
+    }
+  }
   for (let p = 0; p < playerCount; p++) {
     if (p !== player && scores[hole][p] === key) {
       const medalLabel = findMedal(key).label;
